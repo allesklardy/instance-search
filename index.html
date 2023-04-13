@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@meilisearch/instant-meilisearch/templates/basic_search.css"
+    />
+  </head>
+  <body>
+    <div class="wrapper">
+      <h1>Mastodon Instance Search</h1>
+      <div id="searchbox" focus></div>
+      <div id="hits"></div>
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/@meilisearch/instant-meilisearch/dist/instant-meilisearch.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@4"></script>
+  <script>
+    const search = instantsearch({
+      indexName: "instances",
+      searchClient: instantMeiliSearch(
+        "https://meilisearch.averwald.io",
+        "68002d2b430884ea96f85ac683b0e338281c3bdbaec9eca2b88e83ad841dd1bc"
+      ),
+    });
+    search.addWidgets([
+      instantsearch.widgets.searchBox({
+        container: "#searchbox",
+      }),
+      instantsearch.widgets.configure({ hitsPerPage: 25 }),
+      instantsearch.widgets.hits({
+        container: "#hits",
+        templates: {
+          item: `
+            <div>
+				<div class="hit-name">
+                    <img src={{#helpers.highlight}}{ "attribute": "thumbnail" }{{/helpers.highlight}}>
+					<b>{{#helpers.highlight}}{ "attribute": "title" }{{/helpers.highlight}}</b> 
+					- {{#helpers.highlight}}{ "attribute": "uri" }{{/helpers.highlight}}
+                    
+                        <br>
+					{{#helpers.highlight}}{ "attribute": "description" }{{/helpers.highlight}}
+				</div>
+            </div>
+          `,
+        },
+      }),
+    ]);
+    search.start();
+  </script>
+  <style>
+    img {
+      width: 100%;
+      max-width: 600px;
+    }
+  </style>
+</html>
